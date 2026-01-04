@@ -6,7 +6,7 @@ import app from './app';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 // Configuração do SSL
 const sslOptions = {

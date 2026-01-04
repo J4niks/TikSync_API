@@ -153,4 +153,6 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+certs/
 # End of https://www.toptal.com/developers/gitignore/api/git,node
+
