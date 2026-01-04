@@ -126,7 +126,7 @@ export const addPluginController = async (req: Request, res: Response) => {
   try {
     const { downloadUrl } = req.body;
     await serverService.addPlugin(downloadUrl);
-    res.json({ message: "Plugin adicionado" });
+    res.status(201).json({ message: "Plugin adicionado" });
   } catch (err) {
     res.status(500).json({ error: "Erro ao adicionar plugin" });
   }

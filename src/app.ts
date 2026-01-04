@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // CORS
-const allowedOrigins = ["https://meusite.vercel.app", "https://meusite.git.io", "https://localhost:4000"];
+const allowedOrigins = ["https://129.148.41.189:4000"];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);

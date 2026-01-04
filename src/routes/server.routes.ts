@@ -250,17 +250,21 @@ router.post("/ops", serverController.addToOpsController);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         application/x-www-form-urlencoded:
  *           schema:
  *             type: object
- *             required: [name]
+ *             required:
+ *               - downloadUrl
  *             properties:
- *               name:
+ *               downloadUrl:
  *                 type: string
- *                 example: "EssentialsX"
+ *                 format: uri
+ *                 example: https://example.com/plugin.jar
  *     responses:
  *       201:
- *         description: Plugin adicionado
+ *         description: Plugin adicionado com sucesso
+ *       400:
+ *         description: Requisição inválida
  */
 router.post("/plugins", serverController.addPluginController);
 
