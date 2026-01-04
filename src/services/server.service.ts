@@ -48,7 +48,7 @@ export const sendCommand = async (command: string): Promise<void> => {
   const formData = new FormData();
   formData.append("command", command);
 
-  await api.post("v1/server/exec", formData, {
+  await api.post("/v1/server/exec", formData, {
     headers: {
       "Content-Type": "multipart/form-data", // importante!
     },
@@ -58,28 +58,27 @@ export const sendCommand = async (command: string): Promise<void> => {
 export const addToWhitelist = async (uuid: string, name: string): Promise<void> => {
   const body = qs.stringify({ uuid, name });
 
-  await api.post("v1/server/whitelist", body, {
+  await api.post("/v1/server/whitelist", body, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
 };
 
-export const addToOps = async (uuid: string): Promise<void> => {
-  const body = qs.stringify({ uuid });
+export const addToOps = async (playerUuid: string): Promise<void> => {
+  const body = qs.stringify({ playerUuid });
 
-  await api.post("v1/server/ops", body, {
+  await api.post("/v1/server/ops", body, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
 };
-
 
 export const addPlugin = async (downloadUrl: string): Promise<void> => {
   const body = qs.stringify({ downloadUrl });
 
-  await api.post("v1/plugins", body, {
+  await api.post("/v1/plugins", body, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -87,23 +86,13 @@ export const addPlugin = async (downloadUrl: string): Promise<void> => {
 };
 
 export const removeFromWhitelist = async (uuid: string, name: string): Promise<void> => {
-  const body = qs.stringify({ uuid, name });
-
-  await api.delete("v1/server/whitelist", {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    data: body,
+  await api.delete("/v1/server/whitelist", {
+    params: { uuid, name },
   });
 };
 
 export const removeOp = async (playerUuid: string): Promise<void> => {
-  const body = qs.stringify({ playerUuid });
-
-  await api.delete("v1/server/ops", {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    data: body,
+  await api.delete("/v1/server/ops", {
+    params: { playerUuid },
   });
 };

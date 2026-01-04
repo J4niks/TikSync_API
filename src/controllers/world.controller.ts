@@ -4,63 +4,59 @@ import type { World } from "../models/world.model";
 
 // 1️⃣ Pega todos os mundos
 export const getWorldsController = async (req: Request, res: Response) => {
-  try {
-    const data: World[] = await worldService.getWorlds();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao buscar mundos" });
-  }
+  const data: World[] = await worldService.getWorlds();
+  res.json(data);
 };
 
 // 2️⃣ Pega mundo por ID
 export const getWorldByIdController = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const data: World[] = await worldService.getWorldById(id);
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao buscar mundo por ID" });
-  }
+  const { id } = req.params;
+  const data: World[] = await worldService.getWorldById(id);
+  res.json(data);
 };
 
-// 3️⃣ Pega pasta do mundo por ID
-export const getWorldFolderByWorldIdController = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const data: World[] = await worldService.getWorldFolderByWorldId(id);
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao buscar pasta do mundo" });
-  }
+// 3️⃣ Download de UM mundo (STREAM)
+export const getWorldFolderByWorldIdController = async (
+  req: Request,
+  res: Response
+) => {
+  const { id } = req.params;
+
+  const response = await worldService.getWorldFolderByWorldId(id);
+
+  res.setHeader(
+    "Content-Disposition",
+    response.headers["content-disposition"]
+  );
+  res.setHeader("Content-Type", response.headers["content-type"]);
+
+  response.data.pipe(res);
 };
 
-// 4️⃣ Pega todas as pastas de mundos
-export const getAllWorldFoldersController = async (req: Request, res: Response) => {
-  try {
-    const data: World[] = await worldService.getAllWorldFolders();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao buscar todas as pastas de mundos" });
-  }
+// 4️⃣ Download de TODOS os mundos (STREAM)
+export const getAllWorldFoldersController = async (
+  req: Request,
+  res: Response
+) => {
+  const response = await worldService.downloadAllWorlds();
+
+  res.setHeader(
+    "Content-Disposition",
+    response.headers["content-disposition"]
+  );
+  res.setHeader("Content-Type", response.headers["content-type"]);
+
+  response.data.pipe(res);
 };
 
-// 5️⃣ Salvar todos os mundos
-export const saveWorldController = async (req: Request, res: Response) => {
-  try {
-    await worldService.saveWorld();
-    res.json({ message: "Todos os mundos salvos com sucesso" });
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao salvar mundos" });
-  }
+// 5️⃣ Save
+export const saveWorldController = async (_: Request, res: Response) => {
+  await worldService.saveWorld();
+  res.json({ ok: true });
 };
 
-// 6️⃣ Salvar mundo por ID
+// 6️⃣ Save by ID
 export const saveWorldByIdController = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    await worldService.saveWorldById(id);
-    res.json({ message: `Mundo ${id} salvo com sucesso` });
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao salvar mundo por ID" });
-  }
+  await worldService.saveWorldById(req.params.id);
+  res.json({ ok: true });
 };

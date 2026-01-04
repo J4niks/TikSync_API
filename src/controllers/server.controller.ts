@@ -107,10 +107,16 @@ export const addToWhitelistController = async (req: Request, res: Response) => {
 // 1️⃣1️⃣ Add to Ops
 export const addToOpsController = async (req: Request, res: Response) => {
   try {
-    const { uuid } = req.body;
-    await serverService.addToOps(uuid);
-    res.json({ message: "Adicionado como OP" });
+    const { playerUuid } = req.body;
+    if (!playerUuid) {
+      return res.status(400).json({ error: "playerUuid é obrigatório" });
+    }
+
+    await serverService.addToOps(playerUuid);
+
+    res.status(201).json({ message: "Adicionado como OP" });
   } catch (err) {
+    console.error("Erro addToOps:", err);
     res.status(500).json({ error: "Erro ao adicionar OP" });
   }
 };
@@ -129,10 +135,20 @@ export const addPluginController = async (req: Request, res: Response) => {
 // 1️⃣3️⃣ Remove from Whitelist
 export const removeFromWhitelistController = async (req: Request, res: Response) => {
   try {
-    const { uuid, name } = req.body;
-    await serverService.removeFromWhitelist(uuid, name);
+    const { uuid, name } = req.query;
+
+    if (!uuid || !name) {
+      return res.status(400).json({ error: "uuid e name são obrigatórios" });
+    }
+
+    await serverService.removeFromWhitelist(
+      String(uuid),
+      String(name)
+    );
+
     res.json({ message: "Removido da whitelist" });
-  } catch (err) {
+  } catch (err: any) {
+    console.error("Erro removeFromWhitelist:", err);
     res.status(500).json({ error: "Erro ao remover da whitelist" });
   }
 };
@@ -140,10 +156,17 @@ export const removeFromWhitelistController = async (req: Request, res: Response)
 // 1️⃣4️⃣ Remove OP
 export const removeOpController = async (req: Request, res: Response) => {
   try {
-    const { playerUuid } = req.body;
-    await serverService.removeOp(playerUuid);
+    const { playerUuid } = req.query;
+
+    if (!playerUuid) {
+      return res.status(400).json({ error: "playerUuid é obrigatório" });
+    }
+
+    await serverService.removeOp(String(playerUuid));
+
     res.json({ message: "OP removido" });
-  } catch (err) {
+  } catch (err: any) {
+    console.error("Erro removeOp:", err);
     res.status(500).json({ error: "Erro ao remover OP" });
   }
 };

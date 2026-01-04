@@ -13,12 +13,12 @@ export const getAllPlayers = async (): Promise<Player[]> => {
 };
 
 export const getPlayerInventoryById= async (playerUuid:string, worldUuid:string): Promise<Player[]> => {
-  const response = await api.get<Player[]>(`v1/players/${playerUuid}/${worldUuid}/inventory`);
+  const response = await api.get<Player[]>(`/v1/players/${playerUuid}/${worldUuid}/inventory`);
   return response.data;
 };
 
 export const getPlayerById = async (uuid:string): Promise<Player[]> => {
-  const response = await api.get<Player[]>(`/v1/players${uuid}`);
+  const response = await api.get<Player[]>(`/v1/players/${uuid}`);
   return response.data;
 };
 
