@@ -34,8 +34,7 @@ export const login = (req: Request, res: Response) => {
     const password = crypto.privateDecrypt(
       {
         key: privateKey,
-        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-        oaepHash: 'sha256',
+        padding: crypto.constants.RSA_PKCS1_PADDING, // <<<<<< mudou aqui
       },
       passwordBuffer
     ).toString();
