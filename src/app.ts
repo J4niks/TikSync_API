@@ -9,6 +9,7 @@ import playerRoutes from "./routes/player.routes";
 import serverRoutes from "./routes/server.routes";
 import worldRoutes from "./routes/world.routes";
 import { authMiddleware } from "./middlewares/auth.middleware";
+import liveRoutes from "./live/live.routes";
 
 const app = express();
 
@@ -21,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // CORS
-const allowedOrigins = ["https://129.148.41.189:4000"];
+const allowedOrigins = ["https://129.148.41.189:4000", "http://localhost:5173" , "https://localhost:4000"];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
@@ -43,5 +44,6 @@ app.use("/server", authMiddleware, serverRoutes);
 app.use("/players", authMiddleware, playerRoutes);
 app.use("/chat", authMiddleware, chatRoutes);
 app.use("/world", authMiddleware, worldRoutes);
+app.use('/live', authMiddleware, liveRoutes);
 
 export default app;

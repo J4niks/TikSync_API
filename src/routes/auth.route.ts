@@ -1,5 +1,6 @@
 import express from 'express';
-import { login } from '../controllers/auth.controller';
+import { getPublicKey, login } from '../controllers/auth.controller';
+
 
 const router = express.Router();
 
@@ -44,5 +45,7 @@ const router = express.Router();
  *         description: Usuário ou senha inválidos
  */
 router.post('/login', login);
+
+router.get('/public-key', getPublicKey);
 
 export default router;

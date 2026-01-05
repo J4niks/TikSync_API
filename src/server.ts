@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import app from './app';
+import './live/live.service';
 
 dotenv.config();
 
@@ -16,5 +17,5 @@ const sslOptions = {
 
 // Cria servidor HTTPS
 https.createServer(sslOptions, app).listen(PORT, () => {
-  console.log(`API intermediária rodando em https://localhost:${PORT}`);
+  console.log(`API intermediária rodando em https://129.148.41.189:${PORT}`);
 });
