@@ -22,18 +22,22 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // CORS
-const allowedOrigins = ["https://129.148.41.189:4000", "http://localhost:5173" , "https://localhost:4000",];
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
+app.use(cors((req, callback) => {
+  const origin = req.header('Origin');
+  const allowedOrigins = ["https://129.148.41.189:4000", "http://localhost:5173"];
+  const readOnlyOrigins = ["http://129.148.41.189:4001"];
+
+  if (!origin) {
+    return callback(null, { origin: true });
+  }
+
+  if (allowedOrigins.includes(origin)) {
+    callback(null, { origin: true, methods: ["GET", "POST", "PUT", "DELETE"], credentials: true });
+  } else if (readOnlyOrigins.includes(origin)) {
+    callback(null, { origin: true, methods: ["GET"], credentials: true });
+  } else {
+    callback(new Error("Not allowed by CORS"));
+  }
 }));
 
 app.use(express.json());

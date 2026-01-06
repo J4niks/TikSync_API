@@ -54,5 +54,5 @@ server.listen(PORT, () => {
 });
 
 httpServer.listen(4001, () => {
-  console.log(`🔓 Servidor HTTP (OBS) rodando em http://localhost:4001`);
+  console.log(`🔓 Servidor HTTP (OBS) rodando na porta 4001`);
 });
