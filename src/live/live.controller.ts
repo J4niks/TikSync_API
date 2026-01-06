@@ -4,11 +4,32 @@ import { liveManager } from './live.manager';
 export const startLive = async (req: Request, res: Response) => {
   const { username } = req.body;
 
-  try {
-    await liveManager.connect(username);
-    res.json({ status: 'connected', username });
-  } catch (e: any) {
-    res.status(400).json({ error: e.message });
+  let attempts = 0;
+  const maxAttempts = 5;
+
+  while (attempts < maxAttempts) {
+    try {
+      await liveManager.connect(username);
+      return res.json({ status: 'connected', username });
+    } catch (e: any) {
+      attempts++;
+      console.error(`[Live] Erro na tentativa ${attempts}/${maxAttempts}: ${e.message}`);
+
+      // Reseta o estado da conexão antes de tentar novamente
+      // Isso corrige o erro "Live já conectada" nas tentativas seguintes
+      try {
+        liveManager.disconnect();
+      } catch (cleanupErr) {
+        // Ignora erros de limpeza se já estiver desconectado
+      }
+
+      if (attempts >= maxAttempts) {
+        return res.status(503).json({ error: `Falha ao conectar após várias tentativas: ${e.message}` });
+      }
+
+      // Espera 2 segundos antes de tentar novamente
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
   }
 };
 

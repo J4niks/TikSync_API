@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    /* Reset básico para OBS */
+    * {
+  box-sizing: border-box;
+}
+
+body {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+/* Área onde os likes nascem */
+#like-container {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  pointer-events: none;
+}
+
+/* Like flutuante */
+.like-item {
+  position: absolute;
+  left: 0;
+
+  background: rgba(255, 0, 0, 0.85);
+  color: #fff;
+  font-size: 1.2em;
+  padding: 0.6em 0.9em;
+  border-radius: 0.6em;
+
+  white-space: nowrap;
+  box-shadow: 0 0.3em 0.6em rgba(0,0,0,0.3);
+
+  will-change: transform, opacity;
+}
+  </style>
+</head>
+
+<body>
+  <div id="like-container"></div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+  const socket = io('http://127.0.0.1:4001', {
+    transports: ['websocket']
+  });
+
+  const container = document.getElementById('like-container');
+
+  socket.on('live.like', data => {
+    spawnLike(data);
+  });
+
+  function spawnLike(data) {
+    const item = document.createElement('div');
+    item.className = 'like-item';
+    item.textContent = `❤️ ${data.nickname} deu ${data.likeCount} like(s)`;
+
+    // Pequena variação horizontal
+    const offsetX = Math.random() * 40 - 20; // -20px a +20px
+
+    // Duração aleatória (quanto maior, mais devagar)
+    const duration = 4000 + Math.random() * 2000;
+
+    item.style.transform = `translate(${offsetX}px, 0)`;
+    item.style.opacity = '1';
+
+    container.appendChild(item);
+
+    // força layout
+    item.getBoundingClientRect();
+
+    // anima subida contínua
+    item.style.transition = `transform ${duration}ms linear, opacity 500ms ease`;
+    item.style.transform = `translate(${offsetX}px, -400px)`;
+
+    // fade final
+    setTimeout(() => {
+      item.style.opacity = '0';
+    }, duration - 500);
+
+    // remove do DOM
+    setTimeout(() => {
+      item.remove();
+    }, duration);
+  }
+
+  socket.on('live.end', () => {
+    spawnLike({ nickname: 'LIVE', likeCount: 'OFFLINE 🔴' });
+  });
+</script>
+</body>
+</html>

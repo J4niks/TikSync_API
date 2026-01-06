@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+
+    body {
+      background: transparent;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    #gift-alert {
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #gift-alert.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .gift-img {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+      animation: bounce 1s infinite alternate;
+    }
+
+    .gift-text {
+      color: #fff;
+      font-size: 32px;
+      text-shadow: 0 4px 0 #000;
+      margin-top: 10px;
+    }
+
+    .gift-sender {
+      color: #FFD700;
+      font-size: 48px;
+      text-transform: uppercase;
+      text-shadow: 0 4px 0 #000;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="gift-alert"></div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://127.0.0.1:4001', { transports: ['websocket'] });
+    const alertBox = document.getElementById('gift-alert');
+    let queue = [];
+    let isShowing = false;
+
+    socket.on('live.gift', (data) => {
+      // Opcional: filtrar apenas se repeatEnd for true para evitar spam em combos
+      // if (data.repeatEnd) { 
+        queue.push(data);
+        processQueue();
+      // }
+    });
+
+    function processQueue() {
+      if (isShowing || queue.length === 0) return;
+      
+      isShowing = true;
+      const data = queue.shift();
+
+      // Usa imagem do presente se disponível, senão um placeholder
+      const imgUrl = data.giftPictureUrl || 'https://cdn-icons-png.flaticon.com/512/4213/4213958.png';
+
+      alertBox.innerHTML = `
+        <img src="${imgUrl}" class="gift-img" />
+        <div class="gift-sender">${data.nickname}</div>
+        <div class="gift-text">enviou ${data.giftName} x${data.repeatCount}</div>
+      `;
+
+      alertBox.classList.add('active');
+
+      setTimeout(() => {
+        alertBox.classList.remove('active');
+        setTimeout(() => {
+          isShowing = false;
+          processQueue();
+        }, 500); // Tempo da animação de saída
+      }, 4000); // Tempo de exibição na tela
+    }
+  </script>
+</body>
+</html>

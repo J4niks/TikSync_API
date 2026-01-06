@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { swaggerUi, swaggerSpec } from "./docs/swagger";
-
+import path from 'path';
 // Rotas
 import authRoutes from "./routes/auth.route";
 import chatRoutes from "./routes/chat.routes";
@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // CORS
-const allowedOrigins = ["https://129.148.41.189:4000", "http://localhost:5173" , "https://localhost:4000"];
+const allowedOrigins = ["https://129.148.41.189:4000", "http://localhost:5173" , "https://localhost:4000",];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
@@ -45,5 +45,11 @@ app.use("/players", authMiddleware, playerRoutes);
 app.use("/chat", authMiddleware, chatRoutes);
 app.use("/world", authMiddleware, worldRoutes);
 app.use('/live', authMiddleware, liveRoutes);
+app.use('/widgets/likes', express.static(path.join(__dirname, 'widgets/likes')));
+app.use('/widgets/chat', express.static(path.join(__dirname, 'widgets/chat')));
+app.use('/widgets/gifts', express.static(path.join(__dirname, 'widgets/gifts')));
+app.use('/widgets/join', express.static(path.join(__dirname, 'widgets/join')));
+app.use('/widgets/follow', express.static(path.join(__dirname, 'widgets/follow')));
+app.use('/widgets/social', express.static(path.join(__dirname, 'widgets/social')));
 
 export default app;

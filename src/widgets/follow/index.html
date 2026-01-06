@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #follow-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .follow-alert {
+      background: linear-gradient(45deg, #FE2C55, #25F4EE);
+      padding: 4px; /* Borda gradiente */
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      opacity: 0;
+      transform: scale(0.5);
+    }
+
+    .follow-content {
+      background: #1a1a1a;
+      color: white;
+      padding: 20px 40px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .follow-title {
+      font-size: 24px;
+      color: #25F4EE;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .follow-name {
+      font-size: 32px;
+      color: #fff;
+    }
+
+    @keyframes popIn {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes fadeOutDown {
+      to { opacity: 0; transform: translateY(50px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="follow-container"></div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://127.0.0.1:4001', { transports: ['websocket'] });
+    const container = document.getElementById('follow-container');
+    
+    const queue = [];
+    let isProcessing = false;
+
+    socket.on('live.follow', (data) => {
+      queue.push(data);
+      processQueue();
+    });
+
+    function processQueue() {
+      if (isProcessing || queue.length === 0) return;
+      isProcessing = true;
+
+      const data = queue.shift();
+      
+      const alertBox = document.createElement('div');
+      alertBox.className = 'follow-alert';
+      alertBox.innerHTML = `
+        <div class="follow-content">
+          <div class="follow-title">Novo Seguidor</div>
+          <div class="follow-name">${data.nickname}</div>
+        </div>
+      `;
+      
+      container.appendChild(alertBox);
+
+      // Tempo na tela (3 segundos)
+      setTimeout(() => {
+        alertBox.style.animation = 'fadeOutDown 0.5s forwards';
+        setTimeout(() => {
+          alertBox.remove();
+          isProcessing = false;
+          processQueue();
+        }, 500);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
